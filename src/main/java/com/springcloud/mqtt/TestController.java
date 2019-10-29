@@ -1,12 +1,16 @@
 package com.springcloud.mqtt;
 
+import io.swagger.annotations.Api;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Api
 @RestController
 @RequestMapping("/test")
 public class TestController {
@@ -15,9 +19,12 @@ public class TestController {
     @Autowired
     private MqttGateway mqttGateway;
 
-    @GetMapping("/send/{data}")
-    public String sendMqtt(@PathVariable("data") String sendData) {
-        mqttGateway.sendToMqtt(sendData, defaultTopic);
+    @PostMapping("/send")
+    public String sendMqtt(@RequestBody SendParam param) {
+        mqttGateway.sendToMqtt(param.getData(), StringUtils.isEmpty(param.getTopic()) ? defaultTopic : param.getTopic());
         return "OK";
     }
+
+
 }
+
